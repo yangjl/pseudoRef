@@ -1,18 +1,23 @@
-#' \code{get_file2tab}
-#' Scan txt files and extract information into a data.frame.
+#' \code{pseudoRef}
+#' Make a pseudo reference genome.
 #'
-#' @param files Full names of the files to scan [vector].
-#' @param features Unique features for grep to search [vector].
+#' @param fa Path for the fasta file. [string]
+#' @param snpdt A data.table object with heterozygote IUPAC SNP codes. [data.table]
+#' @param sampleidx A vector to indicate the sample columns. [vector].
+#' @param sub_rules Nucleotide substitution rules defined by users. [data.frame]
+#'                  For example, sub_rules <- data.frame(from=c("M", "Y", "R", "K"), to=c("C", "C", "G", "T")).
+#' @param dir Output directory. Sample specific sub-folders will be created. [string]
 #'
-#' @return return Extracted values [data.frame].
+#' @return Fasta files in specified directory under sample-specific sub-folders. [fasta].
 #'
 #' @examples
-#' files <- list.files(path = dir, pattern = fileptn, full.names = TRUE)
+#' sub_rules <- data.frame(from=c("M", "Y", "R", "K"), to=c("C", "C", "G", "T"))
+#'
 #' features <- c("C methylated in CHH context")
 #' get_file2tab(files, features, replace=T )
 #'
 #' @export
-pseudo_ref <- function(snpdf, fa, sampleidx=5:24, sub_rules){
+pseudoRef <- function(fa, snpdt, sampleidx=5:24, sub_rules){
   chrid <-  gsub(" .*", "", names(fa))
 
   ### get one sample at a time
