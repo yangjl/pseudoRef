@@ -1,0 +1,49 @@
+# pseudoRef
+It is an `R` package to make a pseudo reference genome subsituted with the SNP variants for given samples. 
+
+
+## Installation
+Install [devtools] first, and then use devtools to install imputeR from github.
+```
+devtools::install_github("yangjl/pseudoRef")
+```
+
+## Usage
+
+You can find help documentation by simply typing `?pseudoRef`, which is the major function have been implemented in this package.
+```
+Usage:
+
+     pseudoRef(fa, snpdt, sidx = 5:24, arules, outdir)
+
+Arguments:
+
+      fa: Path for the reference fasta file. [string or Robj:
+          DNAStringSet]
+
+   snpdt: A data.table object with heterozygote SNPs coded with IUPAC
+          ambiguity codes. [data.table]
+
+    sidx: A vector to indicate the sample columns. [vector].
+
+  arules: Additional nucleotide substitution rules defined by users.
+          [data.frame:from,to] For example, sub_rules <-
+          data.frame(from=c("M", "Y", "R", "K"), to=c("C", "C", "G",
+          "T")).
+
+  outdir: Output directory. Sample specific sub-folders will be
+          created. [string]
+```
+
+## Note
+
+Before running the package, we should use `BCFtools` to convert VCF/BCF file into IUPAC coded tab seperated file:
+```
+# bcftools view JRI20_filtered_snps_annot.bcf.gz -m2 -M2 -v snps -Oz -o JRI20_bi_snps_annot.vcf.gz
+# bcftools query -f '%CHROM\t%POS\t%REF\t%ALT[\t%IUPACGT]\n' JRI20_bi_snps_annot.vcf.gz > JRI20_bi_snps_annot.txt
+# bcftools query -f 'chr\tpos\tref\talt[\t%SAMPLE]\n' JRI20_bi_snps_annot.vcf.gz > JRI20_bi_snps_annot.header
+```
+
+## License
+
+This package is free and open source software, licensed under GPL.
