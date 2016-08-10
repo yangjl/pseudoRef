@@ -5,19 +5,19 @@
 \title{\code{pseudoRef}
 Make a pseudo reference genome.}
 \usage{
-pseudoRef(fa, snpdt, sampleidx = 5:24, sub_rules)
+pseudoRef(fa, snpdt, sidx = 5:24, arules, outdir)
 }
 \arguments{
-\item{fa}{Path for the fasta file. [string]}
+\item{fa}{Path for the reference fasta file. [string or Robj: DNAStringSet]}
 
-\item{snpdt}{A data.table object with heterozygote IUPAC SNP codes. [data.table]}
+\item{snpdt}{A data.table object with heterozygote SNPs coded with IUPAC ambiguity codes. [data.table]}
 
-\item{sampleidx}{A vector to indicate the sample columns. [vector].}
+\item{sidx}{A vector to indicate the sample columns. [vector].}
 
-\item{sub_rules}{Nucleotide substitution rules defined by users. [data.frame]
+\item{arules}{Additional nucleotide substitution rules defined by users. [data.frame:from,to]
 For example, sub_rules <- data.frame(from=c("M", "Y", "R", "K"), to=c("C", "C", "G", "T")).}
 
-\item{dir}{Output directory. Sample specific sub-folders will be created. [string]}
+\item{outdir}{Output directory. Sample specific sub-folders will be created. [string]}
 }
 \value{
 Fasta files in specified directory under sample-specific sub-folders. [fasta].
@@ -27,7 +27,13 @@ Fasta files in specified directory under sample-specific sub-folders. [fasta].
 Make a pseudo reference genome.
 }
 \examples{
-sub_rules <- data.frame(from=c("M", "Y", "R", "K"), to=c("C", "C", "G", "T"))
+# First of all, use BCFtools to convert VCF into IUPAC coded data.table:
+
+# bcftools view JRI20_filtered_snps_annot.bcf.gz -m2 -M2 -v snps -Oz -o JRI20_bi_snps_annot.vcf.gz
+# bcftools query -f '\%CHROM\\t\%POS\\t\%REF\\t\%ALT[\\t\%IUPACGT]\\n' JRI20_bi_snps_annot.vcf.gz > JRI20_bi_snps_annot.txt
+# bcftools query -f 'chr\\tpos\\tref\\talt[\\t\%SAMPLE]\\n' JRI20_bi_snps_annot.vcf.gz > JRI20_bi_snps_annot.header
+
+arules <- data.frame(from=c("M", "Y", "R", "K"), to=c("C", "C", "G", "T"))
 
 features <- c("C methylated in CHH context")
 get_file2tab(files, features, replace=T )
