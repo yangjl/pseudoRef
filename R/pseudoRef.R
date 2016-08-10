@@ -27,6 +27,7 @@ pseudoRef <- function(fa, snpdt, sidx=5:ncol(snpdt), arules=NULL, outdir){
 
   ### load reference genome fasta file into DNAStringSet
   library("Biostrings")
+  library("data.table")
   if(class(fa) == "character"){fa <- readDNAStringSet(filepath = fa, format="fasta")}
   if(class(fa) != "DNAStringSet" & class(fa) != "DNAString"){stop("fa should be a DNAStringSet or DNAString")}
   if(sum(names(arules) %in% c("from", "to")) !=2)
@@ -44,19 +45,18 @@ pseudoRef <- function(fa, snpdt, sidx=5:ncol(snpdt), arules=NULL, outdir){
   for(s in sidx){
     myfa <- fa
     #tab0 <- table(snpdt[, s, with=FALSE])
-
     sub <- snpdt[, c(1:4, s), with=FALSE]
     sid <- names(snpdt)[s]
     names(sub)[5] <- "SAMPLE"
+    ## remove missing sites and sites that are the same as ref
     sub <- sub[SAMPLE != "./." & ref != SAMPLE]
 
     ### replace for each chrom
     for(i in 1:length(chrid)){
       subchr <- sub[chr == chrid[i]]
       if(nrow(subchr) > 0){
-        ## remove missing sites and sites that are the same as ref
-        idx <- which(chrid[i] == chrid)
 
+        idx <- which(chrid[i] == chrid)
         ## replaced base-pairs according to arules
         if(!is.null(arules)){
           for(k in 1:nrow(arules)){

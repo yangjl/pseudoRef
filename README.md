@@ -48,6 +48,13 @@ Before running the package, we should use `BCFtools` to convert VCF/BCF file int
 # bcftools query -f 'chr\tpos\tref\talt[\t%SAMPLE]\n' JRI20_bi_snps_annot.vcf.gz > JRI20_bi_snps_annot.header
 ```
 
+## TODO
+1. add `test` data.
+2. write a help document and real usage examples.
+3. report a more reasonable substitution statistics.
+4. visulize the report.
+5. handle indels.
+
 ## License
 
 This package is free and open source software, licensed under GPL.
