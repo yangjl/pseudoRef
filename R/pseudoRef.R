@@ -1,10 +1,10 @@
 #' \code{pseudoRef}
 #' Make a pseudo reference genome.
 #'
-#' @param fa Path for the fasta file. [string]
-#' @param snpdt A data.table object with heterozygote IUPAC SNP codes. [data.table]
-#' @param sampleidx A vector to indicate the sample columns. [vector].
-#' @param sub_rules Nucleotide substitution rules defined by users. [data.frame]
+#' @param fa Path for the reference fasta file. [string]
+#' @param snpdt A data.table object with heterozygote SNPs coded with IUPAC ambiguity codes. [data.table]
+#' @param sidx A vector to indicate the sample columns. [vector].
+#' @param srules Nucleotide substitution rules defined by users. [data.frame]
 #'                  For example, sub_rules <- data.frame(from=c("M", "Y", "R", "K"), to=c("C", "C", "G", "T")).
 #' @param dir Output directory. Sample specific sub-folders will be created. [string]
 #'
@@ -17,7 +17,7 @@
 #' get_file2tab(files, features, replace=T )
 #'
 #' @export
-pseudoRef <- function(fa, snpdt, sampleidx=5:24, sub_rules){
+pseudoRef <- function(fa, snpdt, sidx=5:24, srules){
   chrid <-  gsub(" .*", "", names(fa))
 
   ### get one sample at a time
