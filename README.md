@@ -7,7 +7,11 @@ Install [devtools] first, and then use devtools to install imputeR from github.
 ```
 devtools::install_github("yangjl/pseudoRef")
 ```
-
+It requires two other papckages:
+```
+library("data.table")
+library("Biostrings")
+```
 ## Usage
 
 You can find help documentation by simply typing `?pseudoRef`, which is the major function have been implemented in this package.
