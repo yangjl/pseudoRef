@@ -5,22 +5,24 @@
 \title{\code{pseudoRef}
 Make a pseudo reference genome.}
 \usage{
-pseudoRef(fa, snpdt, sidx = 5:24, arules, outdir)
+pseudoRef(fa, snpdt, sidx = 5:ncol(snpdt), arules = NULL, outdir)
 }
 \arguments{
-\item{fa}{Path for the reference fasta file. [string or Robj: DNAStringSet]}
+\item{fa}{Path for the reference fasta file. [string or DNAStringSet/DNAString oject]}
 
-\item{snpdt}{A data.table object with heterozygote SNPs coded with IUPAC ambiguity codes. [data.table]}
+\item{snpdt}{A data.table object with heterozygote SNPs coded with IUPAC ambiguity codes.
+[data.table, 4 required columns: chr, pos, ref, alt, (sample1, ..., sampleN)]}
 
-\item{sidx}{A vector to indicate the sample columns. [vector].}
+\item{sidx}{A vector to indicate the sample columns. [vector, default=5:ncol(snpdt)].}
 
-\item{arules}{Additional nucleotide substitution rules defined by users. [data.frame:from,to]
-For example, sub_rules <- data.frame(from=c("M", "Y", "R", "K"), to=c("C", "C", "G", "T")).}
+\item{arules}{Additional nucleotide substitution rules defined by users.
+[data.frame, 2 required columns: from, to, default=NULL]
+For example, arules <- data.frame(from=c("M", "Y", "R", "K"), to=c("C", "C", "G", "T")).}
 
 \item{outdir}{Output directory. Sample specific sub-folders will be created. [string]}
 }
 \value{
-Fasta files in specified directory under sample-specific sub-folders. [fasta].
+A list of summary statistics of subsituted nucleotides. [list].
 }
 \description{
 \code{pseudoRef}
@@ -34,9 +36,7 @@ Make a pseudo reference genome.
 # bcftools query -f 'chr\\tpos\\tref\\talt[\\t\%SAMPLE]\\n' JRI20_bi_snps_annot.vcf.gz > JRI20_bi_snps_annot.header
 
 arules <- data.frame(from=c("M", "Y", "R", "K"), to=c("C", "C", "G", "T"))
-
-features <- c("C methylated in CHH context")
-get_file2tab(files, features, replace=T )
+res <- pseudoRef(fa, snpdt, sidx=5:24, arules, outdir)
 
 }
 
