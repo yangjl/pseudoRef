@@ -1,14 +1,16 @@
 #' \code{pseudoRef}
 #' Make a pseudo reference genome.
 #'
-#' @param fa Path for the reference fasta file. [string or Robj: DNAStringSet]
-#' @param snpdt A data.table object with heterozygote SNPs coded with IUPAC ambiguity codes. [data.table]
-#' @param sidx A vector to indicate the sample columns. [vector].
-#' @param arules Additional nucleotide substitution rules defined by users. [data.frame:from,to]
-#'               For example, sub_rules <- data.frame(from=c("M", "Y", "R", "K"), to=c("C", "C", "G", "T")).
+#' @param fa Path for the reference fasta file. [string or DNAStringSet/DNAString oject]
+#' @param snpdt A data.table object with heterozygote SNPs coded with IUPAC ambiguity codes.
+#'              [data.table, 4 required columns: chr, pos, ref, alt, (sample1, ..., sampleN)]
+#' @param sidx A vector to indicate the sample columns. [vector, default=5:ncol(snpdt)].
+#' @param arules Additional nucleotide substitution rules defined by users.
+#'               [data.frame, 2 required columns: from, to, default=NULL]
+#'               For example, arules <- data.frame(from=c("M", "Y", "R", "K"), to=c("C", "C", "G", "T")).
 #' @param outdir Output directory. Sample specific sub-folders will be created. [string]
 #'
-#' @return Fasta files in specified directory under sample-specific sub-folders. [fasta].
+#' @return A list of summary statistics of subsituted nucleotides. [list].
 #'
 #' @examples
 #' # First of all, use BCFtools to convert VCF into IUPAC coded data.table:
@@ -18,19 +20,19 @@
 #' # bcftools query -f 'chr\tpos\tref\talt[\t%SAMPLE]\n' JRI20_bi_snps_annot.vcf.gz > JRI20_bi_snps_annot.header
 #'
 #' arules <- data.frame(from=c("M", "Y", "R", "K"), to=c("C", "C", "G", "T"))
-#'
-#' features <- c("C methylated in CHH context")
-#' get_file2tab(files, features, replace=T )
+#' res <- pseudoRef(fa, snpdt, sidx=5:24, arules, outdir)
 #'
 #' @export
-pseudoRef <- function(fa, snpdt, sidx=5:24, arules, outdir){
+pseudoRef <- function(fa, snpdt, sidx=5:ncol(snpdt), arules=NULL, outdir){
 
   ### load reference genome fasta file into DNAStringSet
   library("Biostrings")
   if(class(fa) == "character"){fa <- readDNAStringSet(filepath = fa, format="fasta")}
   if(class(fa) != "DNAStringSet" & class(fa) != "DNAString"){stop("fa should be a DNAStringSet or DNAString")}
   if(sum(names(arules) %in% c("from", "to")) !=2)
-    {stop("arules should be a data.frame with at least two columns of from and to")}
+  {stop("arules should be a data.frame with at least two columns of from and to")}
+  if(sum(names(snpdt) %in% c("chr", "pos", "ref", "alt")) !=4)
+  {stop("snpdt should be a data.table with at least four columns of [chr, pos, ref, alt, (sample1,..., sampleN)]")}
   tab0 <- alphabetFrequency(fa)
   wd0 <- width(fa)
   nm0 <- names(fa)
@@ -55,8 +57,10 @@ pseudoRef <- function(fa, snpdt, sidx=5:24, arules, outdir){
       idx <- which(chrid[i] == chrid)
 
       ## replaced base-pairs according to arules
-      for(k in 1:nrow(arules)){
-        subchr[SAMPLE == arules$from[k], SAMPLE := arules$to[k]]
+      if(!is.null(arules)){
+        for(k in 1:nrow(arules)){
+          subchr[SAMPLE == arules$from[k], SAMPLE := arules$to[k]]
+        }
       }
 
       myfa[[idx]] <- replaceLetterAt(x=myfa[[idx]], at=subchr[, pos], letter=subchr[, SAMPLE],

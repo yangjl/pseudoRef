@@ -3,7 +3,7 @@ It is an `R` package to make a pseudo reference genome subsituted with the SNP v
 
 
 ## Installation
-Install [devtools] first, and then use devtools to install imputeR from github.
+Install [devtools](https://github.com/hadley/devtools) first, and then use devtools to install imputeR from github.
 ```
 devtools::install_github("yangjl/pseudoRef")
 ```
