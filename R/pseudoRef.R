@@ -1,7 +1,7 @@
 #' \code{pseudoRef}
 #' Make a pseudo reference genome.
 #'
-#' @param fa Path for the reference fasta file. [string or DNAStringSet/DNAString oject]
+#' @param fa Path for the reference fasta file. [string or DNAStringSet/DNAString object]
 #' @param snpdt A data.table object with heterozygote SNPs coded with IUPAC ambiguity codes.
 #'              [data.table, 4 required columns: chr, pos, ref, alt, (sample1, ..., sampleN)]
 #' @param sidx A vector to indicate the sample columns. [vector, default=5:ncol(snpdt)].
@@ -53,18 +53,19 @@ pseudoRef <- function(fa, snpdt, sidx=5:ncol(snpdt), arules=NULL, outdir){
     ### replace for each chrom
     for(i in 1:length(chrid)){
       subchr <- sub[chr == chrid[i]]
-      ## remove missing sites and sites that are the same as ref
-      idx <- which(chrid[i] == chrid)
+      if(nrow(subchr) > 0){
+        ## remove missing sites and sites that are the same as ref
+        idx <- which(chrid[i] == chrid)
 
-      ## replaced base-pairs according to arules
-      if(!is.null(arules)){
-        for(k in 1:nrow(arules)){
-          subchr[SAMPLE == arules$from[k], SAMPLE := arules$to[k]]
+        ## replaced base-pairs according to arules
+        if(!is.null(arules)){
+          for(k in 1:nrow(arules)){
+            subchr[SAMPLE == arules$from[k], SAMPLE := arules$to[k]]
+          }
         }
+        myfa[[idx]] <- replaceLetterAt(x=myfa[[idx]], at=subchr[, pos], letter=subchr[, SAMPLE],
+                                       if.not.extending="replace", verbose=FALSE)
       }
-
-      myfa[[idx]] <- replaceLetterAt(x=myfa[[idx]], at=subchr[, pos], letter=subchr[, SAMPLE],
-                                   if.not.extending="replace", verbose=FALSE)
     }
 
     ### write for each sample
