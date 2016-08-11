@@ -8,7 +8,7 @@ Make a pseudo reference genome.}
 pseudoRef(fa, snpdt, sidx = 5:ncol(snpdt), arules = NULL, outdir)
 }
 \arguments{
-\item{fa}{Path for the reference fasta file. [string or DNAStringSet/DNAString oject]}
+\item{fa}{Path for the reference fasta file. [string or DNAStringSet/DNAString object]}
 
 \item{snpdt}{A data.table object with heterozygote SNPs coded with IUPAC ambiguity codes.
 [data.table, 4 required columns: chr, pos, ref, alt, (sample1, ..., sampleN)]}

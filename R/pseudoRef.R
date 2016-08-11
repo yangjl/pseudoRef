@@ -30,7 +30,7 @@ pseudoRef <- function(fa, snpdt, sidx=5:ncol(snpdt), arules=NULL, outdir){
   library("data.table")
   if(class(fa) == "character"){fa <- readDNAStringSet(filepath = fa, format="fasta")}
   if(class(fa) != "DNAStringSet" & class(fa) != "DNAString"){stop("fa should be a DNAStringSet or DNAString")}
-  if(sum(names(arules) %in% c("from", "to")) !=2)
+  if(!is.null(arules) & sum(names(arules) %in% c("from", "to")) !=2)
   {stop("arules should be a data.frame with at least two columns of from and to")}
   if(sum(names(snpdt) %in% c("chr", "pos", "ref", "alt")) !=4)
   {stop("snpdt should be a data.table with at least four columns of [chr, pos, ref, alt, (sample1,..., sampleN)]")}
