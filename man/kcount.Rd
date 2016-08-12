@@ -27,7 +27,7 @@ Counting kmer frequency for a given genome or pseudo genome.
 feature <- data.frame(chr=1, start=seq(from=1, to=10000001, by=1000),
                       end=seq(from=1000, to=11000000, by=1000)[1:10001],
                       geneid=paste0("g", 1:10001))
-kcount <- function(fa, feature, kmers=3:7)
+kcount(fa, feature, kmers=3:7)
 
 }
 

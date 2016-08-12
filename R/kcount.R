@@ -13,12 +13,12 @@
 #' feature <- data.frame(chr=1, start=seq(from=1, to=10000001, by=1000),
 #'                       end=seq(from=1000, to=11000000, by=1000)[1:10001],
 #'                       geneid=paste0("g", 1:10001))
-#' kcount <- function(fa, feature, kmers=3:7)
+#' kcount(fa, feature, kmers=3:7)
 #'
 #' @export
 kcount <- function(fa, feature, kmers=3:7){
   ### load reference genome fasta file into DNAStringSet
-  library("Biostrings")
+  #library("Biostrings")
   #library("data.table")
   if(class(fa) == "character"){fa <- readDNAStringSet(filepath = fa, format="fasta")}
   if(class(fa) != "DNAStringSet" & class(fa) != "DNAString"){stop("fa should be a DNAStringSet or DNAString")}
@@ -29,24 +29,25 @@ kcount <- function(fa, feature, kmers=3:7){
   chrid <-  gsub(" .*", "", names(fa))
 
   ### replace for each chrom
-  allout <- data.frame()
-  for(i in 1:10){
+  allout <- list()
+  chrs <- unique(feature$chr)
+  if(sum(chrs %in% chrid) == 0) stop("Chromsome ids do not mataching!")
+  for(i in chrs){
     subf <- subset(feature, chr==i)
     chridx <- which(chrid == i)
 
     ### for each kmer
     out <- data.frame()
     for(k in kmers){
-      message(sprintf("###>>> counting [ %smer ] for [ chr%i ] ...", k, i))
-      res <- sapply(1:nrow(feature), function(x){
+      message(sprintf("###>>> counting [ %smer ] for [ chr%s ] ...", k, i))
+      res <- sapply(1:nrow(subf), function(x){
         oligonucleotideFrequency(subseq(fa[[chridx]], start=subf$start[x], end=subf$end[x]),
                                  width=k, as.array=F)
       })
       out <- rbind(out, res)
-      names(out) <- subf$geneid
     }
-    allout <- cbind(out, allout)
+    names(out) <- subf$geneid
+    allout[[i]] <- out
   }
-  return(allout)
-
+  return(do.call(cbind, allout[chrs]))
 }
