@@ -1,9 +1,9 @@
 # pseudoRef
-It is an `R` package to make a pseudo reference genome subsituted with the SNP variants for given samples. 
+It is an `R` package to make a pseudo reference genome subsituted with the SNP variants of given samples. 
 
 
 ## Installation
-Install [devtools](https://github.com/hadley/devtools) first, and then use devtools to install imputeR from github.
+Install [devtools](https://github.com/hadley/devtools) first, and then use devtools to install `pseudoRef` from github.
 ```
 devtools::install_github("yangjl/pseudoRef")
 ```
@@ -23,7 +23,7 @@ Usage:
 Arguments:
 
       fa: Path for the reference fasta file. [string or
-          DNAStringSet/DNAString oject]
+          DNAStringSet/DNAString object]
 
    snpdt: A data.table object with heterozygote SNPs coded with IUPAC
           ambiguity codes. [data.table, 4 required columns: chr, pos,

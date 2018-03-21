@@ -60,7 +60,8 @@ pseudoRef <- function(fa, snpdt, sidx=5:ncol(snpdt), arules=NULL, outdir){
         ## replaced base-pairs according to arules
         if(!is.null(arules)){
           for(k in 1:nrow(arules)){
-            subchr[SAMPLE == arules$from[k], SAMPLE := arules$to[k]]
+            # update the SAMPLE column, might have a problem
+            subchr[SAMPLE == arules$from[k], eval("SAMPLE") := arules$to[k]]
           }
         }
         myfa[[idx]] <- replaceLetterAt(x=myfa[[idx]], at=subchr[, pos], letter=subchr[, SAMPLE],
