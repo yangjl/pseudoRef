@@ -26,7 +26,8 @@
 pseudoRef <- function(fa, snpdt, sidx=5:ncol(snpdt), arules=NULL, outdir){
 
   ### load reference genome fasta file into DNAStringSet
-
+  library("data.table")
+  library("Biostrings")
   if(class(fa) == "character"){fa <- readDNAStringSet(filepath = fa, format="fasta")}
   if(class(fa) != "DNAStringSet" & class(fa) != "DNAString"){stop("fa should be a DNAStringSet or DNAString")}
   if(!is.null(arules) & sum(names(arules) %in% c("from", "to")) !=2)
@@ -37,8 +38,6 @@ pseudoRef <- function(fa, snpdt, sidx=5:ncol(snpdt), arules=NULL, outdir){
   wd0 <- width(fa)
   nm0 <- names(fa)
 
-  message(sprintf("###>>> 1"))
-
   ### chr id, get only the first element of the blank seperated vector.
   chrid <-  gsub(" .*", "", names(fa))
   res <- list()
@@ -47,6 +46,7 @@ pseudoRef <- function(fa, snpdt, sidx=5:ncol(snpdt), arules=NULL, outdir){
     myfa <- fa
     #tab0 <- table(snpdt[, s, with=FALSE])
     sub <- snpdt[, c(1:4, s), with=FALSE]
+    sub <- as.data.frame(sub)
     sid <- names(snpdt)[s]
     names(sub)[5] <- "SAMPLE"
     ## remove missing sites and sites that are the same as ref
@@ -56,8 +56,6 @@ pseudoRef <- function(fa, snpdt, sidx=5:ncol(snpdt), arules=NULL, outdir){
     sub <- subset(sub, SAMPLE != "./." & ref != SAMPLE)
 
     ### replace for each chrom
-    sub <- as.data.frame(sub)
-    #message(sprintf("###>>> [%s]", class(sub)))
     for(i in 1:length(chrid)){
       subchr <- subset(sub, chr == chrid[i])
       if(nrow(subchr) > 0){
