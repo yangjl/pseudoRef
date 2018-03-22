@@ -61,7 +61,7 @@ pseudoRef <- function(fa, snpdt, sidx=5:ncol(snpdt), arules=NULL, outdir){
         if(!is.null(arules)){
           for(k in 1:nrow(arules)){
             # update the SAMPLE column, might have a problem
-            subchr[SAMPLE == arules$from[k], eval("SAMPLE") := arules$to[k]]
+            subchr[SAMPLE == arules$from[k], 5] <- arules$to[k]
           }
         }
         myfa[[idx]] <- replaceLetterAt(x=myfa[[idx]], at=subchr[, pos], letter=subchr[, SAMPLE],
