@@ -26,8 +26,7 @@
 pseudoRef <- function(fa, snpdt, sidx=5:ncol(snpdt), arules=NULL, outdir){
 
   ### load reference genome fasta file into DNAStringSet
-  library("Biostrings")
-  library("data.table")
+
   if(class(fa) == "character"){fa <- readDNAStringSet(filepath = fa, format="fasta")}
   if(class(fa) != "DNAStringSet" & class(fa) != "DNAString"){stop("fa should be a DNAStringSet or DNAString")}
   if(!is.null(arules) & sum(names(arules) %in% c("from", "to")) !=2)
@@ -37,6 +36,8 @@ pseudoRef <- function(fa, snpdt, sidx=5:ncol(snpdt), arules=NULL, outdir){
   tab0 <- alphabetFrequency(fa)
   wd0 <- width(fa)
   nm0 <- names(fa)
+
+  message(sprintf("###>>> 1"))
 
   ### chr id, get only the first element of the blank seperated vector.
   chrid <-  gsub(" .*", "", names(fa))
@@ -49,23 +50,29 @@ pseudoRef <- function(fa, snpdt, sidx=5:ncol(snpdt), arules=NULL, outdir){
     sid <- names(snpdt)[s]
     names(sub)[5] <- "SAMPLE"
     ## remove missing sites and sites that are the same as ref
-    sub <- sub[SAMPLE != "./." & ref != SAMPLE]
+    #sub <- as.data.table(sub)
+
+    #sub <- sub[, SAMPLE != "./." & ref != SAMPLE]
+    sub <- subset(sub, SAMPLE != "./." & ref != SAMPLE)
 
     ### replace for each chrom
+    sub <- as.data.frame(sub)
+    #message(sprintf("###>>> [%s]", class(sub)))
     for(i in 1:length(chrid)){
-      subchr <- sub[chr == chrid[i]]
+      subchr <- subset(sub, chr == chrid[i])
       if(nrow(subchr) > 0){
 
         idx <- which(chrid[i] == chrid)
         ## replaced base-pairs according to arules
         if(!is.null(arules)){
+          arules$from <- as.character(arules$from)
+          arules$to <- as.character(arules$to)
           for(k in 1:nrow(arules)){
             # update the SAMPLE column, might have a problem
-            print("here?")
             subchr[subchr[,5] == arules$from[k], 5] <- arules$to[k]
           }
         }
-        myfa[[idx]] <- replaceLetterAt(x=myfa[[idx]], at=subchr[, pos], letter=subchr[, SAMPLE],
+        myfa[[idx]] <- replaceLetterAt(x=myfa[[idx]], at=subchr[, "pos"], letter=subchr[, "SAMPLE"],
                                        if.not.extending="replace", verbose=FALSE)
       }
     }
@@ -77,9 +84,10 @@ pseudoRef <- function(fa, snpdt, sidx=5:ncol(snpdt), arules=NULL, outdir){
     if(sum(wd0 - wd1) != 0 & sum(nm0 != nm1) != 0)
       {stop(sprintf("!!! changed chr length or chr id for sample [ %s ]", sid))}
 
-    dir.create(paste0(outdir, "/", sid), showWarnings = FALSE)
+    #dir.create(paste0(outdir, "/", sid), showWarnings = FALSE)
     message(sprintf("###>>> printing fasta file for sample: [ %s ] ...", sid))
-    writeXStringSet(myfa, paste0(outdir, "/", sid, "/", sid, ".fasta"), format="fasta", append=FALSE)
+    outid <- paste0(outdir, "/", sid, ".fasta")
+    writeXStringSet(myfa, filepath=outid, format="fasta", append=FALSE)
 
     ###output reprot
     res[[sid]] <- tab1 - tab0

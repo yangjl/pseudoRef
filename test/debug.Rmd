@@ -1,0 +1,40 @@
+---
+title: "Debug code"
+output: html_notebook
+---
+
+
+```{r}
+library("data.table")
+library("Biostrings")
+library("pseudoRef")
+
+
+arules <- data.frame(from=c("M", "Y", "R", "K"), to=c("C", "C", "G", "T"))
+
+
+h <- read.table("head.txt", header=TRUE)
+snpdt <- fread("n1000_bisnp_annot.txt", header=FALSE)
+names(snpdt) <- gsub("_.*", "", names(h))
+
+# fa can be "character", "DNAStringSet" or "DNAString"
+fa <- "sample_chr10.fa"
+fa <- readDNAStringSet(filepath = fa, format="fasta")
+
+pseudoRef(fa, snpdt, sidx = 5:6, arules, outdir="output")
+
+
+```
+
+```{r}
+fa <- readDNAStringSet(filepath = "sample_chr10.fa", format="fasta")
+fa2 <- readDNAStringSet(filepath = "output/JRIAL2A.fasta", format="fasta")
+
+sub <- snpdt[JRIAL2A != "./." & ref != JRIAL2A][, 1:5]
+
+p <- 275
+subseq(fa[1], sub$pos[p], sub$pos[p])
+subseq(fa2[1], sub$pos[p], sub$pos[p])
+
+```
+
