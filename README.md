@@ -2,7 +2,7 @@
 It is an `R` package to make a pseudo reference genome subsituted with the SNP variants of given samples. 
 
 
-## Installation
+## Installation (< 10 mins)
 Install [devtools](https://github.com/hadley/devtools) first, and then use devtools to install `pseudoRef` from github.
 ```
 devtools::install_github("yangjl/pseudoRef")
@@ -49,13 +49,6 @@ Before running the package, we should use `BCFtools` to convert VCF/BCF file int
 # bcftools query -f '%CHROM\t%POS\t%REF\t%ALT[\t%IUPACGT]\n' JRI20_bi_snps_annot.vcf.gz > JRI20_bi_snps_annot.txt
 # bcftools query -f 'chr\tpos\tref\talt[\t%SAMPLE]\n' JRI20_bi_snps_annot.vcf.gz > JRI20_bi_snps_annot.header
 ```
-
-## TODO
-1. add `test` data.
-2. write a help document and real usage examples.
-3. report a more reasonable substitution statistics.
-4. visulize the report.
-5. handle indels.
 
 ## License
 
